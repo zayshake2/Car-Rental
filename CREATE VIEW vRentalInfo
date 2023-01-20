@@ -1,0 +1,17 @@
+CREATE VIEW vRentalInfo 
+AS SELECT OrderDate, StartDate, ReturnDate, SUM(RentalType*Qty) AS TotalDays, 
+Rental.VehicleID AS VIN, Description AS Vehicle, Vehicle.Type AS Type, 
+Vehicle.Category AS Category, Customer.CustID AS CustomerID, Name AS CustomerName, 
+TotalAmount AS OrderAmount, PaymentDate AS RentalBalance,
+ CASE WHEN Vehicle.Type = 1 THEN 'Compact'
+      WHEN Vehicle.Type = 2 THEN 'Medium'
+      WHEN Vehicle.Type = 3 THEN 'Large'
+      WHEN Vehicle.Type = 4 THEN 'SUV'
+      WHEN Vehicle.Type = 5 THEN 'Truck'
+      ELSE 'Van' END AS TypeName,
+CASE  WHEN Vehicle.Category = 1 THEN 'Luxury'
+      ELSE 'Basic' END AS CategoryName
+FROM Customer, Vehicle, Rental, Rate
+WHERE Vehicle.VehicleID = Rental.VehicleID AND Customer.CustID = Rental.CustID 
+AND Vehicle.Type = Rate.Type AND Vehicle.Category = Rate.Category
+ORDER BY StartDate ASC
